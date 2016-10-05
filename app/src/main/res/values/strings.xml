@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">FrisbyApp</string>
+    <string name="Usuario">Ingrese Usuario</string>
+    <string name="Comtrasena">Ingrese Contraseña</string>
+    <string name="Entrar">Entrar</string>
+    <string name="Resgistro">Resgistro</string>
+    <string name="Correo">Correo xx@xx</string>
+    <string name="Aceptar">Aceptar</string>
+    <string name="Cancelar">Cancelar</string>
+    <string name="Perfil">Ir a mi perfil</string>
+    <string name="Principal">Ir a principal</string>
+    <string name="CProductos">Ir productos</string>
+    <string name="tpollob">Pollo BBQ</string>
+    <string name="tpolloA">Pollo apanado</string>
+    <string name="tsanduche">Frisby sanduche</string>
+    <string name="tburro">Frisby burrito</string>
+    <string name="tparrilla">Frisby parrilla</string>
+    <string name="tensalada">Frisby ensalada</string>
+    <string name="precio">Precio: </string>
+    <string name="abierto">Open navigation drawer</string>
+    <string name="cerrado">Close navigation drawer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
