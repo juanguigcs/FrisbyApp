@@ -63,7 +63,7 @@ public class PromocionActivity extends AppCompatActivity {
                 fragment = new p4Fragment();
                 ft.replace(R.id.contenedorFrame, fragment).commit();
                 break;
-            case (5):
+            case (4):
                 fragment = new p5Fragment();
                 ft.replace(R.id.contenedorFrame, fragment).commit();
                 break;

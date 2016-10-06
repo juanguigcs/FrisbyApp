@@ -69,23 +69,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivityForResult(intent, 1234);
                 break;
             case R.id.bEntrar:
-                if(valida()){
-                    editor.putInt("v_ingreso",1);
-                    editor.putString("v_usuario",Array_usuario[Integer.parseInt(usuario_in)]);
-                    editor.putString("v_correo",Array_correo[Integer.parseInt(usuario_in)]);
-                    editor.putString("v_contrasena",Array_contrasena[Integer.parseInt(usuario_in)]);
-                    editor.commit();
-
-                    Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
-                    intent2.putExtra("usuario",Array_usuario[Integer.parseInt(usuario_in)]);
-                    intent2.putExtra("correo",Array_correo[Integer.parseInt(usuario_in)]);
-                    intent2.putExtra("contrasena",Array_contrasena[Integer.parseInt(usuario_in)]);
-                    intent2.putExtra("usarioint",usuario_in);
-                    startActivity(intent2);
+                if(prefs.getString("v_usuario", "u").equals(eUsario.getText().toString())){
+                    Intent intent3 = new Intent(getApplicationContext(), MainActivity.class);
+                    intent3.putExtra("usuario", prefs.getString("v_usuario", "u"));
+                    intent3.putExtra("correo", prefs.getString("v_correo", "c"));
+                    intent3.putExtra("contrasena", prefs.getString("v_contrasena", "p"));
+                    startActivity(intent3);
                     finish();
+                    editor.putInt("v_ingreso", 1);
+                    editor.commit();
                 }
                 else {
-                    Toast.makeText(this, "Usuario y/o contraseña incorrecta", Toast.LENGTH_SHORT).show();
+                    if (valida()) {
+                        editor.putInt("v_ingreso", 1);
+                        editor.putString("v_usuario", Array_usuario[Integer.parseInt(usuario_in)]);
+                        editor.putString("v_correo", Array_correo[Integer.parseInt(usuario_in)]);
+                        editor.putString("v_contrasena", Array_contrasena[Integer.parseInt(usuario_in)]);
+                        editor.commit();
+
+                        Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
+                        intent2.putExtra("usuario", Array_usuario[Integer.parseInt(usuario_in)]);
+                        intent2.putExtra("correo", Array_correo[Integer.parseInt(usuario_in)]);
+                        intent2.putExtra("contrasena", Array_contrasena[Integer.parseInt(usuario_in)]);
+                        intent2.putExtra("usarioint", usuario_in);
+                        startActivity(intent2);
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Usuario y/o contraseña incorrecta", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
         }

@@ -94,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
                     case(3):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
                         startActivity(intent3);
-                        editor.clear();
+                        //editor.clear();
+                        editor.remove("v_ingreso");
                         editor.commit();
                         finish();
                       //  Toast.makeText(getApplicationContext(),"Opcion cerrar  "+String.valueOf(i), Toast.LENGTH_SHORT).show();
