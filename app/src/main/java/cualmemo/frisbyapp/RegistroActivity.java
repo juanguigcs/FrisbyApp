@@ -1,7 +1,9 @@
 package cualmemo.frisbyapp;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -17,6 +19,9 @@ public class RegistroActivity extends AppCompatActivity {
     Button brAceptar,brCancelar;
     EditText erUsario, erContrasena,erRContrasena,erCorreo;
 
+    ContactosSQLiteHelper contactos;
+    SQLiteDatabase dbContactos;
+    ContentValues dataBD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
