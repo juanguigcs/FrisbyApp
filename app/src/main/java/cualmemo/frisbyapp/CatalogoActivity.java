@@ -42,13 +42,9 @@ public class CatalogoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalogo);
 
+        //pref compartidas
         prefs= getSharedPreferences("uno",MODE_PRIVATE);
         editor=prefs.edit();
-
-        Bundle extras = getIntent().getExtras();
-        final String user = extras.getString("usuario");
-        final String correo = extras.getString("correo");
-        final String contrasena = extras.getString("contrasena");
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -68,24 +64,14 @@ public class CatalogoActivity extends AppCompatActivity {
                 switch (i){
                     case(0):
                         Intent intent= new Intent(getApplicationContext(),MainActivity.class);
-                        intent.putExtra("usuario",user);
-                        intent.putExtra("correo",correo);
-                        intent.putExtra("contrasena",contrasena);
                         startActivity(intent);
-                       // finish();
-                     //   Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(1):
                         Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(2):
                         Intent intent2= new Intent(getApplicationContext(),PerfilActivity.class);
-                        intent2.putExtra("usuario",user);
-                        intent2.putExtra("correo",correo);
-                        intent2.putExtra("contrasena",contrasena);
                         startActivity(intent2);
-                      //  finish();
-                      //  Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(3):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
@@ -93,7 +79,6 @@ public class CatalogoActivity extends AppCompatActivity {
                         editor.clear();
                         editor.commit();
                         finish();
-                       // Toast.makeText(getApplicationContext(),"Opcion cerrar "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                 }
 

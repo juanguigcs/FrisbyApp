@@ -14,8 +14,9 @@ public class ContactosSQLiteHelper extends SQLiteOpenHelper {
     String sqlCreate = "CREATE TABLE Contactos (" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "usuario     TEXT," +
-            "contrasena   TEXT," +
-            "correo     TEXT)";
+            "contrasena  TEXT," +
+            "rcontrasena TEXT,"+
+            "correo      TEXT)";
 
     public ContactosSQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);

@@ -1,11 +1,15 @@
 package cualmemo.frisbyapp;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +28,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+    //sqlite
+    PromocionSQliteHelper Promocion;
+    SQLiteDatabase dbPromocion;
+    ContentValues datapBD;
 
     // arreglo para ver en el menú -- lista del menú -- Navigation draw
     private String [] opciones = new  String[]{"Principal","Productos","Mi perfil","Cerrar sesión"};
@@ -38,29 +46,80 @@ public class MainActivity extends AppCompatActivity {
             new Productos_combo(R.drawable.combo3, "$18.000", "Super combo 3", "Realiza tu pedido"),
             new Productos_combo(R.drawable.comboa, "$19.000", "Super apanado", "Realiza tu pedido"),
             new Productos_combo(R.drawable.combon, "$23.000", "Super nuggets", "Realiza tu pedido")};
-    ListView list2;
+    ListView list2,list3;
 
+    //pref compartidas
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //sqlite
+        Promocion= new PromocionSQliteHelper(this, "PromocionDB",null,1);
+        dbPromocion= Promocion.getWritableDatabase();
+
+        //pref compartidas
         prefs= getSharedPreferences("uno",MODE_PRIVATE);
         editor=prefs.edit();
 
-        Bundle extras = getIntent().getExtras();
-        final String user = extras.getString("usuario");
-        final String correo = extras.getString("correo");
-        final String contrasena = extras.getString("contrasena");
+        //llenar primera vez la tabla promocion de productos
+        if(prefs.getInt("v_ingreso2",-1)==-1){
+            Toast.makeText(this, "primera vez"+prefs.getInt("v_ingreso",-1), Toast.LENGTH_SHORT).show();
+            editor.putInt("v_ingreso2", 2);
+            editor.commit();
+            datapBD = new ContentValues();
+            datapBD.put("idimagen", R.drawable.combo1);
+            datapBD.put("precio", "$15.000");
+            datapBD.put("nombre", "Super combo 1");
+            datapBD.put("descripcion", "Realiza tu pedido");
+            dbPromocion.insert("Promocion", null, datapBD);
 
+            datapBD = new ContentValues();
+            datapBD.put("idimagen", R.drawable.combo2);
+            datapBD.put("precio", "$16.000");
+            datapBD.put("nombre", "Super combo 1");
+            datapBD.put("descripcion", "Realiza tu pedido");
+            dbPromocion.insert("Promocion", null, datapBD);
+
+            datapBD = new ContentValues();
+            datapBD.put("idimagen", R.drawable.combo3);
+            datapBD.put("precio", "$17.000");
+            datapBD.put("nombre", "Super combo 3");
+            datapBD.put("descripcion", "Realiza tu pedido");
+            dbPromocion.insert("Promocion", null, datapBD);
+
+            datapBD = new ContentValues();
+            datapBD.put("idimagen", R.drawable.comboa);
+            datapBD.put("precio", "$18.000");
+            datapBD.put("nombre", "Super combo 4");
+            datapBD.put("descripcion", "Realiza tu pedido");
+            dbPromocion.insert("Promocion", null, datapBD);
+
+           // dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo1+"', $15.000,Super combo 1,Realiza tu pedido )");
+            //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo2+"', $16.000,Super combo 2,Realiza tu pedido )");
+            //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo3+"', $17.000,Super combo 3,Realiza tu pedido )");
+            //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.comboa+"', $18.000,Super combo 4,Realiza tu pedido )");
+            Toast.makeText(this, "segunda vez"+prefs.getInt("v_ingreso2",-1), Toast.LENGTH_SHORT).show();
+
+        }
+
+        /*list3 =(ListView)findViewById(R.id.listview);
+
+        String[] from=new String[]{Promocion.CLI_NOMBRE,Promocion.CLI_PRECIO};
+        int[] to=new int[]{android.R.id.text1,android.R.id.text2};
+        Cursor c=Promocion.Cargar_BD();
+        SimpleCursorAdapter adapter= new SimpleCursorAdapter(this,android.R.layout.two_line_list_item,c,from,to,0);
+        list3.setAdapter(adapter);*/
+
+        //menu completo
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
         drawerLayout = (DrawerLayout)findViewById(R.id.contenedor);
         list=(ListView)findViewById(R.id.mizq);
         list.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(),
@@ -68,28 +127,15 @@ public class MainActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Fragment fragment = null;
                 switch (i){
                     case(0):
-                     //   Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(1):
                         Intent intent= new Intent(getApplicationContext(),CatalogoActivity.class);
-                        intent.putExtra("usuario",user);
-                        intent.putExtra("correo",correo);
-                        intent.putExtra("contrasena",contrasena);
                         startActivity(intent);
-                       // finish();
-                       // Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
-                        break;
                     case(2):
                         Intent intent2= new Intent(getApplicationContext(),PerfilActivity.class);
-                        intent2.putExtra("usuario",user);
-                        intent2.putExtra("correo",correo);
-                        intent2.putExtra("contrasena",contrasena);
                         startActivity(intent2);
-                       // finish();
-                       // Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(3):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
@@ -98,44 +144,31 @@ public class MainActivity extends AppCompatActivity {
                         editor.remove("v_ingreso");
                         editor.commit();
                         finish();
-                      //  Toast.makeText(getApplicationContext(),"Opcion cerrar  "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                 }
-
-                list.setItemChecked(i,true);
-                drawerLayout.closeDrawer(list);
+        list.setItemChecked(i,true);
+        drawerLayout.closeDrawer(list);
             }
         });
         drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.abierto, R.string.cerrado);
         drawerLayout.setDrawerListener(drawerToggle);
 
+        //list view para promocion
         Adapter adaptador = new Adapter(this,datos);
         list2 =(ListView)findViewById(R.id.listview);
         list2.setAdapter(adaptador);
+
         list2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent= new Intent(getApplicationContext(),PromocionActivity.class);
                 intent.putExtra("numpromo",String.valueOf(i));
-                intent.putExtra("usuario",user);
-                intent.putExtra("correo",correo);
-                intent.putExtra("contrasena",contrasena);
                 startActivity(intent);
-                //finish();
-                Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
             }
         });
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                drawerLayout.openDrawer(Gravity.LEFT);
-                return true;
-        }
 
-        return super.onOptionsItemSelected(item);
-    }
 
     //Adaptador para cambiar el item de los productos del combo
     class Adapter extends ArrayAdapter<Productos_combo> {
@@ -163,5 +196,16 @@ public class MainActivity extends AppCompatActivity {
 
             return (item);
         }
+    }
+    //menu izq pemzar fuera del cel
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                drawerLayout.openDrawer(Gravity.LEFT);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

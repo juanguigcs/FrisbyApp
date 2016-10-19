@@ -1,7 +1,10 @@
 package cualmemo.frisbyapp;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -22,6 +25,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button bResgistro, bEntrar;
     EditText eUsario, eContrasena;
 
+    //sqlite
+    ContactosSQLiteHelper contactos;
+    SQLiteDatabase dbContactos;
+    ContentValues dataBD;
+    Cursor c;
+
     //pref compartidas
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
@@ -32,6 +41,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login_activiy);
 
+        //sqlite
+        contactos= new ContactosSQLiteHelper(this, "ContactosBD",null,1);
+        dbContactos= contactos.getWritableDatabase();
+
+        //instancia boton editText
         bResgistro = (Button) findViewById(R.id.bRegistro);
         bEntrar = (Button) findViewById(R.id.bEntrar);
         eUsario = (EditText) findViewById(R.id.eUsuario);
@@ -39,26 +53,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         bResgistro.setOnClickListener(this);
         bEntrar.setOnClickListener(this);
 
+        //pref compartidas
         prefs= getSharedPreferences("uno",MODE_PRIVATE);
         editor=prefs.edit();
+
+        //se verifica si hay un usario activo si es así se aplican los datos para este(entra directo a main
         if(prefs.getInt("v_ingreso",-1)==-1){
          //   Toast.makeText(this, "primera vez", Toast.LENGTH_SHORT).show();
         }
         else{
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.putExtra("usuario", prefs.getString("v_usuario", "u"));
-                intent.putExtra("correo", prefs.getString("v_correo", "c"));
-                intent.putExtra("contrasena", prefs.getString("v_contrasena", "p"));
                 startActivity(intent);
                 finish();
-            //}
         }
     }
-    //limpiar preferencias
-    public void ClearPrefs(View view){
-        editor.clear();
-        editor.commit();
-    }
+
     //listener para dos varios botones
     @Override
     public void onClick(View view) {
@@ -66,86 +76,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (id) {
             case R.id.bRegistro:
                 Intent intent = new Intent(this, RegistroActivity.class);
-                startActivityForResult(intent, 1234);
+                startActivity(intent);
+                finish();
                 break;
             case R.id.bEntrar:
-                if(prefs.getString("v_usuario", "u").equals(eUsario.getText().toString())){
-                    Intent intent3 = new Intent(getApplicationContext(), MainActivity.class);
-                    intent3.putExtra("usuario", prefs.getString("v_usuario", "u"));
-                    intent3.putExtra("correo", prefs.getString("v_correo", "c"));
-                    intent3.putExtra("contrasena", prefs.getString("v_contrasena", "p"));
-                    startActivity(intent3);
-                    finish();
-                    editor.putInt("v_ingreso", 1);
-                    editor.commit();
-                }
-                else {
-                    if (valida()) {
+                c = dbContactos.rawQuery("select * from Contactos where usuario='" + eUsario.getText().toString() + "'", null);
+                if (c.moveToFirst()) {
+                    if(c.getString(2).equals(eContrasena.getText().toString())){
                         editor.putInt("v_ingreso", 1);
-                        editor.putString("v_usuario", Array_usuario[Integer.parseInt(usuario_in)]);
-                        editor.putString("v_correo", Array_correo[Integer.parseInt(usuario_in)]);
-                        editor.putString("v_contrasena", Array_contrasena[Integer.parseInt(usuario_in)]);
+                        editor.putString("v_usuario",c.getString(1) );
+                        //Toast.makeText(this, "c(2)"+c.getString(2), Toast.LENGTH_SHORT).show();
                         editor.commit();
-
                         Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
-                        intent2.putExtra("usuario", Array_usuario[Integer.parseInt(usuario_in)]);
-                        intent2.putExtra("correo", Array_correo[Integer.parseInt(usuario_in)]);
-                        intent2.putExtra("contrasena", Array_contrasena[Integer.parseInt(usuario_in)]);
-                        intent2.putExtra("usarioint", usuario_in);
                         startActivity(intent2);
                         finish();
-                    } else {
+                    }
+                    else{
                         Toast.makeText(this, "Usuario y/o contraseña incorrecta", Toast.LENGTH_SHORT).show();
                     }
                 }
+                else {
+                    Toast.makeText(this, "Usuario no existe", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
         }
     }
-    //funcion propia para validar la info desde el registro
-    protected boolean valida() {
-        String temp_usuario = eUsario.getText().toString();
-        String temp_contrasena = eContrasena.getText().toString();
-        boolean flag_valida=false;
 
-        if (TextUtils.isEmpty(temp_usuario) || TextUtils.isEmpty(temp_contrasena)) {
-           // Toast.makeText(this, "Campos vacíos .-. ", Toast.LENGTH_SHORT).show();
-            flag_valida = false;
-        }
-        else {
-            for (int i = 0; i<= cont_usuario; i++) {
-                if (temp_contrasena.equals(Array_contrasena[i]) && temp_usuario.equals(Array_usuario[i])) {
-                    flag_valida =true;
-                    usuario_in=Integer.toString(i);
-                    break;
-                }
-                else {
-                    flag_valida = false;
-                    }
-                }
-            }
-        if(flag_valida){
-            return true;
-        }
-        else{
-           return false;
-        }
-    }
-    //funcion para abrir una nueva actividad esperando recibir unos datos
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == 1234 && resultCode == RESULT_OK){
-            String user = data.getExtras().getString("usuario");
-            String contrasena = data.getExtras().getString("contrasena");
-            String correo= data.getExtras().getString("correo");
-            //lleno mi "base de datos"
-            Array_usuario[cont_usuario]= user;
-            Array_contrasena[cont_usuario]=contrasena;
-            Array_correo[cont_usuario]=correo;
-            cont_usuario ++;
-        }
-        if (requestCode==1234 && resultCode == RESULT_CANCELED){
-            Log.d("mensaje","no se cargaron datos");
-        }
-    }
 }

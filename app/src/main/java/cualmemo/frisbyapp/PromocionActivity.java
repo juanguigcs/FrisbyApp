@@ -38,10 +38,8 @@ public class PromocionActivity extends AppCompatActivity {
         editor=prefs.edit();
 
         Bundle extras = getIntent().getExtras();
-        final String user = extras.getString("usuario");
-        final String correo = extras.getString("correo");
-        final String contrasena = extras.getString("contrasena");
         String numpromo = extras.getString("numpromo");
+
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft =fm.beginTransaction();
         //Toast.makeText(getApplicationContext(),"la opcion desde la actividad es "+numpromo, Toast.LENGTH_SHORT).show();
@@ -87,33 +85,16 @@ public class PromocionActivity extends AppCompatActivity {
                 switch (i){
                     case(0):
                         Intent intent= new Intent(getApplicationContext(),MainActivity.class);
-                        intent.putExtra("usuario",user);
-                        intent.putExtra("correo",correo);
-                        intent.putExtra("contrasena",contrasena);
                         startActivity(intent);
-                       // finish();
                         Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
-                        //fragment =new LivianaFragment();
-                        //FragmentManager fragmentManager = getSupportFragmentManager();
-                        //fragmentManager.beginTransaction().replace(R.id.contenedorFrame  , fragment).commit();
                         break;
                     case(1):
                         Intent intent2= new Intent(getApplicationContext(),CatalogoActivity.class);
-                        intent2.putExtra("usuario",user);
-                        intent2.putExtra("correo",correo);
-                        intent2.putExtra("contrasena",contrasena);
                         startActivity(intent2);
-                        //finish();
-                     //   Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(2):
                         Intent intent3= new Intent(getApplicationContext(),PerfilActivity.class);
-                        intent3.putExtra("usuario",user);
-                        intent3.putExtra("correo",correo);
-                        intent3.putExtra("contrasena",contrasena);
                         startActivity(intent3);
-                       // finish();
-                     //   Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(3):
                         Intent intent4= new Intent(getApplicationContext(),LoginActivity.class);
@@ -121,7 +102,6 @@ public class PromocionActivity extends AppCompatActivity {
                         editor.clear();
                         editor.commit();
                         finish();
-                       // Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                 }
 
@@ -131,9 +111,6 @@ public class PromocionActivity extends AppCompatActivity {
         });
         drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.abierto, R.string.cerrado);
         drawerLayout.setDrawerListener(drawerToggle);
-
-
-
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
