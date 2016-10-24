@@ -64,7 +64,7 @@ public class PerfilActivity extends AppCompatActivity {
             tVusuario.setText(c.getString(1));
             tVcorreo.setText(c.getString(4));
             tVcontrasena.setText(c.getString(2));
-            Toast.makeText(this, "c(1)"+c.getString(1), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "vamos con c(1)"+c.getString(1), Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "c(2)"+c.getString(2), Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "c(3)"+c.getString(3), Toast.LENGTH_SHORT).show();
         }

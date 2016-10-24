@@ -27,6 +27,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     //sqlite
     PromocionSQliteHelper Promocion;
@@ -40,22 +43,35 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
 
     //info para las promociones
-    private Productos_combo[] datos = new Productos_combo[]{
+    /*private Productos_combo[] datos = new Productos_combo[]{
             new Productos_combo(R.drawable.combo1, "$15.000", "Super combo 1", "Realiza tu pedido"),
             new Productos_combo(R.drawable.combo2, "$20.000", "Super combo 2", "Realiza tu pedido"),
             new Productos_combo(R.drawable.combo3, "$18.000", "Super combo 3", "Realiza tu pedido"),
             new Productos_combo(R.drawable.comboa, "$19.000", "Super apanado", "Realiza tu pedido"),
-            new Productos_combo(R.drawable.combon, "$23.000", "Super nuggets", "Realiza tu pedido")};
+            new Productos_combo(R.drawable.combon, "$23.000", "Super nuggets", "Realiza tu pedido")};*/
+
     ListView list2,list3;
 
     //pref compartidas
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
 
+
+    //ArrayList vamoaver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ArrayList<Productos_combo> vamoaver = new ArrayList<>();
+        vamoaver.add(new Productos_combo(R.drawable.combo1, "$15.000", "Super combo 1", "Realiza tu pedido"));
+        vamoaver.add(new Productos_combo(R.drawable.combo2, "$20.000", "Super combo 2", "Realiza tu pedido"));
+        vamoaver.add(new Productos_combo(R.drawable.combo3, "$18.000", "Super combo 3", "Realiza tu pedido"));
+        vamoaver.add(new Productos_combo(R.drawable.comboa, "$19.000", "Super apanado", "Realiza tu pedido"));
+
+        Myadapter  myadapter =new Myadapter(this,vamoaver);
+        list2 =(ListView)findViewById(R.id.listview);
+        list2.setAdapter(myadapter);
 
         //sqlite
         Promocion= new PromocionSQliteHelper(this, "PromocionDB",null,1);
@@ -97,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
             datapBD.put("nombre", "Super combo 4");
             datapBD.put("descripcion", "Realiza tu pedido");
             dbPromocion.insert("Promocion", null, datapBD);
-
            // dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo1+"', $15.000,Super combo 1,Realiza tu pedido )");
             //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo2+"', $16.000,Super combo 2,Realiza tu pedido )");
             //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo3+"', $17.000,Super combo 3,Realiza tu pedido )");
@@ -105,15 +120,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "segunda vez"+prefs.getInt("v_ingreso2",-1), Toast.LENGTH_SHORT).show();
 
         }
-
-        /*list3 =(ListView)findViewById(R.id.listview);
-
-        String[] from=new String[]{Promocion.CLI_NOMBRE,Promocion.CLI_PRECIO};
-        int[] to=new int[]{android.R.id.text1,android.R.id.text2};
-        Cursor c=Promocion.Cargar_BD();
-        SimpleCursorAdapter adapter= new SimpleCursorAdapter(this,android.R.layout.two_line_list_item,c,from,to,0);
-        list3.setAdapter(adapter);*/
-
         //menu completo
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -153,10 +159,11 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.abierto, R.string.cerrado);
         drawerLayout.setDrawerListener(drawerToggle);
 
+
         //list view para promocion
-        Adapter adaptador = new Adapter(this,datos);
+        /*Adapter adaptador = new Adapter(this,datos);
         list2 =(ListView)findViewById(R.id.listview);
-        list2.setAdapter(adaptador);
+        list2.setAdapter(adaptador);*/
 
         list2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -169,9 +176,39 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public class Myadapter extends ArrayAdapter<Productos_combo>{
+        private final Context context;
+        private final ArrayList<Productos_combo>  datos ;
 
+        public Myadapter(Context context, ArrayList<Productos_combo>  datos) {
+            super(context, -1, datos);
+            this.context = context;
+            this.datos = datos;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View item = inflater.inflate(R.layout.pruducto_promo_item,parent,false);
+
+            TextView nombre= (TextView)item.findViewById(R.id.tnombre);
+            TextView precio= (TextView)item.findViewById(R.id.tprecio);
+            TextView descripcion= (TextView)item.findViewById(R.id.tdescripcion);
+            ImageView imagen =(ImageView) item.findViewById(R.id.iImagen);
+
+            Productos_combo pactual =  datos.get(position);
+
+            nombre.setText( pactual.getNombre());
+            precio.setText(pactual.getPrecio());
+            descripcion.setText(pactual.getDescripcion());
+            imagen.setImageResource(pactual.getIdImagen());
+
+            return (item);
+        }
+    }
     //Adaptador para cambiar el item de los productos del combo
-    class Adapter extends ArrayAdapter<Productos_combo> {
+    /*class Adapter extends ArrayAdapter<Productos_combo> {
         public Adapter(Context context, Productos_combo[] datos) {
             super(context, R.layout.pruducto_promo_item, datos);
 
@@ -196,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
             return (item);
         }
-    }
+    }*/
     //menu izq pemzar fuera del cel
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
