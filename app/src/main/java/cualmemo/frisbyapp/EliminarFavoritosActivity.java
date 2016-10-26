@@ -21,10 +21,9 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class PromocionActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class EliminarFavoritosActivity extends AppCompatActivity implements View.OnClickListener {
     // arreglo para ver en el menú -- lista del menú -- Navigation draw
-    private String [] opciones = new  String[]{"Principal","Productos","Mi perfil","Cerrar sesión"};
+    private String[] opciones = new String[]{"Principal", "Productos", "Mi perfil","Favoritos", "Cerrar sesión"};
     ListView list;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
@@ -44,48 +43,47 @@ public class PromocionActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_promocion);
-
+        setContentView(R.layout.activity_eliminar_favoritos);
         //sqlite
-        favoritosSQLiteHelper= new FavoritosSQLiteHelper(this, "FavoritosBD",null,1);
-        dbFavoritos= favoritosSQLiteHelper.getWritableDatabase();
+        favoritosSQLiteHelper = new FavoritosSQLiteHelper(this, "FavoritosBD", null, 1);
+        dbFavoritos = favoritosSQLiteHelper.getWritableDatabase();
         //sqlite
-        contactos= new ContactosSQLiteHelper(this, "ContactosBD",null,1);
-        dbContactos= contactos.getWritableDatabase();
+        contactos = new ContactosSQLiteHelper(this, "ContactosBD", null, 1);
+        dbContactos = contactos.getWritableDatabase();
 
-        prefs= getSharedPreferences("uno",MODE_PRIVATE);
-        editor=prefs.edit();
+        prefs = getSharedPreferences("uno", MODE_PRIVATE);
+        editor = prefs.edit();
 
         Bundle extras = getIntent().getExtras();
         String numpromo = extras.getString("numpromo");
-        numpromoint=Integer.parseInt(numpromo);
-        checkAñadir=(CheckBox)findViewById(R.id.checkAñadir);
+        numpromoint = Integer.parseInt(numpromo);
+        checkAñadir = (CheckBox) findViewById(R.id.checkAñadir);
 
 
         checkAñadir.setOnClickListener(this);
 
         FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft =fm.beginTransaction();
+        FragmentTransaction ft = fm.beginTransaction();
         //Toast.makeText(getApplicationContext(),"la opcion desde la actividad es "+numpromo, Toast.LENGTH_SHORT).show();
         Fragment fragment = null;
         switch (Integer.parseInt(numpromo)) {
-            case (0):
+            case (1):
                 fragment = new p1Fragment();
                 ft.replace(R.id.contenedorFrame, fragment).commit();
                 break;
-            case (1):
+            case (2):
                 fragment = new p2Fragment();
                 ft.replace(R.id.contenedorFrame, fragment).commit();
                 break;
-            case (2):
+            case (3):
                 fragment = new p3Fragment();
                 ft.replace(R.id.contenedorFrame, fragment).commit();
                 break;
-            case (3):
+            case (4):
                 fragment = new p4Fragment();
                 ft.replace(R.id.contenedorFrame, fragment).commit();
                 break;
-            case (4):
+            case (5):
                 fragment = new p5Fragment();
                 ft.replace(R.id.contenedorFrame, fragment).commit();
                 break;
@@ -93,38 +91,43 @@ public class PromocionActivity extends AppCompatActivity implements View.OnClick
         }
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        drawerLayout = (DrawerLayout)findViewById(R.id.contenedor);
-        list=(ListView)findViewById(R.id.mizq);
+        drawerLayout = (DrawerLayout) findViewById(R.id.contenedor);
+        list = (ListView) findViewById(R.id.mizq);
         list.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_1, opciones));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Fragment fragment = null;
-                switch (i){
-                    case(0):
-                        Intent intent= new Intent(getApplicationContext(),MainActivity.class);
+                switch (i) {
+                    case (0):
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
-                        Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Opcion " + String.valueOf(i), Toast.LENGTH_SHORT).show();
                         finish();
                         break;
-                    case(1):
-                        Intent intent2= new Intent(getApplicationContext(),CatalogoActivity.class);
+                    case (1):
+                        Intent intent2 = new Intent(getApplicationContext(), CatalogoActivity.class);
                         startActivity(intent2);
-                        finish();
-                        break;
-                    case(2):
-                        Intent intent3= new Intent(getApplicationContext(),PerfilActivity.class);
-                        startActivity(intent3);
                        finish();
                         break;
-                    case(3):
-                        Intent intent4= new Intent(getApplicationContext(),LoginActivity.class);
+                    case (2):
+                        Intent intent3 = new Intent(getApplicationContext(), PerfilActivity.class);
+                        startActivity(intent3);
+                        //  finish();
+                        break;
+                    case (3):
+                        Intent intent5 = new Intent(getApplicationContext(), FavoritosActivity.class);
+                        startActivity(intent5);
+                        finish();
+                        break;
+                    case (4):
+                        Intent intent4 = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(intent4);
                         editor.remove("v_ingreso");
                         editor.commit();
@@ -132,16 +135,17 @@ public class PromocionActivity extends AppCompatActivity implements View.OnClick
                         break;
                 }
 
-                list.setItemChecked(i,true);
+                list.setItemChecked(i, true);
                 drawerLayout.closeDrawer(list);
             }
         });
-        drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.abierto, R.string.cerrado);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.abierto, R.string.cerrado);
         drawerLayout.setDrawerListener(drawerToggle);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 drawerLayout.openDrawer(Gravity.LEFT);
                 return true;
@@ -152,20 +156,21 @@ public class PromocionActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View view) {
-        int id=view.getId();
+        int id = view.getId();
         //switch (id){
-            //case R.id.bGuardar:
-                if(checkAñadir.isChecked()){
-                    if(favoritosSQLiteHelper.buscarFav1((numpromoint+1),contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario() )) {
-                        //Toast.makeText(getApplicationContext(), "existe"+(numpromoint+1), Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(), "Agregado", Toast.LENGTH_SHORT).show();
-                        //Toast.makeText(getApplicationContext(), " NOO existe"+contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario(), Toast.LENGTH_SHORT).show();
-                        favoritosSQLiteHelper.insertFav(contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario(),(numpromoint+1),(numpromoint+1));
-                    }
-                }
-      //  }
+        //case R.id.bGuardar:
+        if (checkAñadir.isChecked()) {
+            if (favoritosSQLiteHelper.buscarFav1((numpromoint ), contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario())) {
+                favoritosSQLiteHelper.eliminarFav((numpromoint ), contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario());
+                //Toast.makeText(getApplicationContext(), "existe"+(numpromoint+1), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Eliminado", Toast.LENGTH_SHORT).show();
+            } else {
+                //Toast.makeText(getApplicationContext(), "Eliminado", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), " NOO existe"+contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario(), Toast.LENGTH_SHORT).show();
+                //favoritosSQLiteHelper.insertFav(contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario(), (numpromoint + 1), (numpromoint + 1));
+            }
+        }
+        //  }
 
 
     }

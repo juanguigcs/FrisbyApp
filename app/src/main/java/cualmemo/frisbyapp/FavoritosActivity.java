@@ -4,12 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,24 +15,23 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class FavoritosActivity extends AppCompatActivity {
     //sqlite
     ProductosSQLiteHelper productosSQLiteHelper;
     SQLiteDatabase dbProductos;
     ContentValues datapBD;
     FavoritosSQLiteHelper favoritosSQLiteHelper;
     SQLiteDatabase dbFavoritos;
+    ContactosSQLiteHelper contactos;
+    SQLiteDatabase dbContactos;
 
     // arreglo para ver en el menú -- lista del menú -- Navigation draw
     private String [] opciones = new  String[]{"Principal","Productos","Mi perfil","Cerrar sesión"};
@@ -49,47 +44,44 @@ public class MainActivity extends AppCompatActivity {
     //pref compartidas
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_favoritos);
 
         //pref compartidas
         prefs= getSharedPreferences("uno",MODE_PRIVATE);
         editor=prefs.edit();
-        
+
         //sqlite
         productosSQLiteHelper= new ProductosSQLiteHelper(this, "ProductosBD",null,1);
         dbProductos= productosSQLiteHelper.getWritableDatabase();
         favoritosSQLiteHelper= new FavoritosSQLiteHelper(this, "FavoritosBD",null,1);
         dbFavoritos= favoritosSQLiteHelper.getWritableDatabase();
-
-        //llenar primera vez la tabla promocion de productos
-        if(productosSQLiteHelper.buscarProducto(1).getIdprod()==-1){
-            productosSQLiteHelper.insertProducto(1,R.drawable.combo1, "$15.000", "Super combo 1", "Realiza tu pedido");
-            productosSQLiteHelper.insertProducto(2,R.drawable.combo2, "$20.000", "Super combo 2", "Realiza tu pedido");
-            productosSQLiteHelper.insertProducto(3,R.drawable.combo3, "$18.000", "Super combo 3", "Realiza tu pedido");
-            productosSQLiteHelper.insertProducto(4,R.drawable.comboa, "$19.000", "Super apanado", "Realiza tu pedido");
-        }
-
+        contactos= new ContactosSQLiteHelper(this, "ContactosBD",null,1);
+        dbContactos= contactos.getWritableDatabase();
         //LisVIew
-        ArrayList<Productos_combo> vamoaver = new ArrayList<Productos_combo>();
-        for(int i=1;i <=4;i++){
-            vamoaver.add(new Productos_combo(productosSQLiteHelper.buscarProducto(i).getIdprod(),productosSQLiteHelper.buscarProducto(i).getIdImagen(),productosSQLiteHelper.buscarProducto(i).getPrecio(),productosSQLiteHelper.buscarProducto(i).getNombre(),productosSQLiteHelper.buscarProducto(i).getDescripcion()));
+        final ArrayList<Productos_combo> vamoaver = new ArrayList<Productos_combo>();
+        for(int i=1;i <=5;i++) {
+            if (favoritosSQLiteHelper.buscarFav1(i, contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario())) {
+                vamoaver.add(new Productos_combo(productosSQLiteHelper.buscarProducto(i).getIdprod(), productosSQLiteHelper.buscarProducto(i).getIdImagen(), productosSQLiteHelper.buscarProducto(i).getPrecio(), productosSQLiteHelper.buscarProducto(i).getNombre(), productosSQLiteHelper.buscarProducto(i).getDescripcion()));
+            }
         }
 
-        Myadapter  myadapter =new Myadapter(this,vamoaver);
+        final Myadapter  myadapter =new Myadapter(this,vamoaver);
         list2 =(ListView)findViewById(R.id.listview);
         list2.setAdapter(myadapter);
 
         list2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent= new Intent(getApplicationContext(),PromocionActivity.class);
-                intent.putExtra("numpromo",String.valueOf(i));
+
+                Intent intent= new Intent(getApplicationContext(),EliminarFavoritosActivity.class);
+
+                //intent.putExtra("numpromo",String.valueOf(i));
+                intent.putExtra("numpromo",String.valueOf(vamoaver.get(i).getIdprod()));
                 startActivity(intent);
-                //finish();
+                finish();
                 //Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
             }
         });
@@ -111,16 +103,19 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i){
                     case(0):
+                        Intent intent4= new Intent(getApplicationContext(),MainActivity.class);
+                        startActivity(intent4);
+                        //finish();
                         break;
                     case(1):
                         Intent intent= new Intent(getApplicationContext(),CatalogoActivity.class);
                         startActivity(intent);
-                       // finish();
+                        //finish();
                         break;
                     case(2):
                         Intent intent2= new Intent(getApplicationContext(),PerfilActivity.class);
                         startActivity(intent2);
-                      //  finish();
+                        //finish();
                         break;
                     case(3):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
@@ -131,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                         break;
                 }
-        list.setItemChecked(i,true);
-        drawerLayout.closeDrawer(list);
+                list.setItemChecked(i,true);
+                drawerLayout.closeDrawer(list);
             }
         });
         drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.abierto, R.string.cerrado);

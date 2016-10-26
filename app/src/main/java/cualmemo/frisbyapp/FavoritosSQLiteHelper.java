@@ -42,8 +42,12 @@ public class FavoritosSQLiteHelper extends SQLiteOpenHelper {
         db.insert("Favoritos", null, contentValues);
         return true;
     }
+    public void eliminarFav(int idfav, int idusuario){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("Favoritos","idusuario=" + idusuario + " AND idfav=" + idfav + "", null);
+    }
 
-    public Favoritos buscarFav (int idfav){
+    public Favoritos buscarFav (int idfav, int idusuario){
         SQLiteDatabase db = this.getWritableDatabase();
         Favoritos tempc= new Favoritos();
         Cursor c = db.rawQuery("select * from Favoritos where idusuario=" + idfav + "", null);

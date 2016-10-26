@@ -101,7 +101,7 @@ public class RegistroActivity extends AppCompatActivity {
                    contid ++;
                    editor.putInt("v_idusario", contid);
                    editor.commit();
-                   Toast.makeText(this, "numero de usuario "+Integer.toString(prefs.getInt("v_idusario",-1)), Toast.LENGTH_SHORT).show();
+                   //Toast.makeText(this, "numero de usuario "+Integer.toString(prefs.getInt("v_idusario",-1)), Toast.LENGTH_SHORT).show();
                    return contactos.insertContactos(prefs.getInt("v_idusario",-1),temp_usuario,temp_contrasena,temp_correo);
                 }
            }

@@ -23,7 +23,7 @@ import android.widget.Toast;
 public class PerfilActivity extends AppCompatActivity {
 
     // arreglo para ver en el menú -- lista del menú -- Navigation draw
-    private String [] opciones = new  String[]{"Principal","Productos","Mi perfil","Cerrar sesión"};
+    private String [] opciones = new  String[]{"Principal","Productos","Mi perfil","Favoritos","Cerrar sesión"};
     ListView list;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
@@ -65,7 +65,7 @@ public class PerfilActivity extends AppCompatActivity {
             tVcorreo.setText(c.getString(4));
             tVcontrasena.setText(c.getString(3));
             //Toast.makeText(this, "vamos "+prefs.getString("v_usuario", "u"), Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, "c(2)"+c.getString(1), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "c(2)"+c.getString(1), Toast.LENGTH_SHORT).show();
             //Toast.makeText(this, "c(3)"+c.getString(3), Toast.LENGTH_SHORT).show();
         }
 
@@ -86,17 +86,22 @@ public class PerfilActivity extends AppCompatActivity {
                     case(0):
                         Intent intent= new Intent(getApplicationContext(),MainActivity.class);
                         startActivity(intent);
-                        finish();
+                      //  finish();
                         break;
                     case(1):
                         Intent intent2= new Intent(getApplicationContext(),CatalogoActivity.class);
                         startActivity(intent2);
-                        finish();
+                      //  finish();
                         break;
                     case(2):
                         Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
-                    case(3):
+                    case (3):
+                        Intent intent4= new Intent(getApplicationContext(),FavoritosActivity.class);
+                        startActivity(intent4);
+                      //  finish();
+                        break;
+                    case(4):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
                         startActivity(intent3);
                         editor.remove("v_ingreso");

@@ -65,13 +65,15 @@ public class CatalogoActivity extends AppCompatActivity {
                     case(0):
                         Intent intent= new Intent(getApplicationContext(),MainActivity.class);
                         startActivity(intent);
+                        //finish();
                         break;
                     case(1):
-                        Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
                         break;
                     case(2):
                         Intent intent2= new Intent(getApplicationContext(),PerfilActivity.class);
                         startActivity(intent2);
+                       // finish();
                         break;
                     case(3):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
