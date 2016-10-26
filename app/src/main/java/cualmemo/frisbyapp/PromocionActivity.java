@@ -2,6 +2,7 @@ package cualmemo.frisbyapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,10 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class PromocionActivity extends AppCompatActivity {
+public class PromocionActivity extends AppCompatActivity implements View.OnClickListener {
 
     // arreglo para ver en el menú -- lista del menú -- Navigation draw
     private String [] opciones = new  String[]{"Principal","Productos","Mi perfil","Cerrar sesión"};
@@ -26,19 +29,41 @@ public class PromocionActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
+    Button bGuardar;
+    CheckBox checkAñadir;
+
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
+    int numpromoint;
+
+    FavoritosSQLiteHelper favoritosSQLiteHelper;
+    SQLiteDatabase dbFavoritos;
+    ContactosSQLiteHelper contactos;
+    SQLiteDatabase dbContactos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_promocion);
 
+        //sqlite
+        favoritosSQLiteHelper= new FavoritosSQLiteHelper(this, "FavoritosBD",null,1);
+        dbFavoritos= favoritosSQLiteHelper.getWritableDatabase();
+        //sqlite
+        contactos= new ContactosSQLiteHelper(this, "ContactosBD",null,1);
+        dbContactos= contactos.getWritableDatabase();
+
         prefs= getSharedPreferences("uno",MODE_PRIVATE);
         editor=prefs.edit();
 
         Bundle extras = getIntent().getExtras();
         String numpromo = extras.getString("numpromo");
+        numpromoint=Integer.parseInt(numpromo);
+        bGuardar=(Button)findViewById(R.id.bGuardar);
+        checkAñadir=(CheckBox)findViewById(R.id.checkAñadir);
+
+        bGuardar.setOnClickListener(this);
+        checkAñadir.setOnClickListener(this);
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft =fm.beginTransaction();
@@ -99,7 +124,7 @@ public class PromocionActivity extends AppCompatActivity {
                     case(3):
                         Intent intent4= new Intent(getApplicationContext(),LoginActivity.class);
                         startActivity(intent4);
-                        editor.clear();
+                        editor.remove("v_ingreso");
                         editor.commit();
                         finish();
                         break;
@@ -121,5 +146,24 @@ public class PromocionActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id=view.getId();
+        //switch (id){
+            //case R.id.bGuardar:
+                if(checkAñadir.isChecked()){
+                    if(favoritosSQLiteHelper.buscarFav1((numpromoint+1),contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario() )) {
+                        Toast.makeText(getApplicationContext(), "existe"+(numpromoint+1), Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), " NOO existe"+contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario(), Toast.LENGTH_SHORT).show();
+                        favoritosSQLiteHelper.insertFav(contactos.buscarContactos(prefs.getString("v_usuario", "u")).getIdusuario(),(numpromoint+1),(numpromoint+1));
+                    }
+                }
+      //  }
+
+
     }
 }

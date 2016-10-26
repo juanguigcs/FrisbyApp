@@ -7,10 +7,14 @@
     tools:context="cualmemo.frisbyapp.PromocionActivity"
     android:background="@color/pollitoa"
     android:id="@+id/contenedor">
-
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.9"
         android:orientation="vertical">
         <ImageView
             android:layout_width="wrap_content"
@@ -22,6 +26,23 @@
             android:layout_height="300dp"
             android:id="@+id/contenedorFrame"></FrameLayout>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.1">
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/favoritos"
+            android:id="@+id/checkAñadir"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/guardar"
+            android:id="@+id/bGuardar"/>
+
+    </LinearLayout>
+</LinearLayout>
 
     <ListView
         android:layout_width="240dp"

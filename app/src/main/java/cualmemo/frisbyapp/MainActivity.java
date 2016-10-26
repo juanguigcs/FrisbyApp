@@ -32,9 +32,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     //sqlite
-    PromocionSQliteHelper Promocion;
-    SQLiteDatabase dbPromocion;
+    ProductosSQLiteHelper productosSQLiteHelper;
+    SQLiteDatabase dbProductos;
     ContentValues datapBD;
+    FavoritosSQLiteHelper favoritosSQLiteHelper;
+    SQLiteDatabase dbFavoritos;
 
     // arreglo para ver en el menú -- lista del menú -- Navigation draw
     private String [] opciones = new  String[]{"Principal","Productos","Mi perfil","Cerrar sesión"};
@@ -63,63 +65,56 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ArrayList<Productos_combo> vamoaver = new ArrayList<>();
-        vamoaver.add(new Productos_combo(R.drawable.combo1, "$15.000", "Super combo 1", "Realiza tu pedido"));
-        vamoaver.add(new Productos_combo(R.drawable.combo2, "$20.000", "Super combo 2", "Realiza tu pedido"));
-        vamoaver.add(new Productos_combo(R.drawable.combo3, "$18.000", "Super combo 3", "Realiza tu pedido"));
-        vamoaver.add(new Productos_combo(R.drawable.comboa, "$19.000", "Super apanado", "Realiza tu pedido"));
+        //pref compartidas
+        prefs= getSharedPreferences("uno",MODE_PRIVATE);
+        editor=prefs.edit();
+        
+        //sqlite
+        productosSQLiteHelper= new ProductosSQLiteHelper(this, "ProductosBD",null,1);
+        dbProductos= productosSQLiteHelper.getWritableDatabase();
+        favoritosSQLiteHelper= new FavoritosSQLiteHelper(this, "FavoritosBD",null,1);
+        dbFavoritos= favoritosSQLiteHelper.getWritableDatabase();
+
+        //llenar primera vez la tabla promocion de productos
+        if(productosSQLiteHelper.buscarProducto(1).getIdprod()==-1){
+            productosSQLiteHelper.insertProducto(1,R.drawable.combo1, "$15.000", "Super combo 1", "Realiza tu pedido");
+            productosSQLiteHelper.insertProducto(2,R.drawable.combo2, "$20.000", "Super combo 2", "Realiza tu pedido");
+            productosSQLiteHelper.insertProducto(3,R.drawable.combo3, "$18.000", "Super combo 3", "Realiza tu pedido");
+            productosSQLiteHelper.insertProducto(4,R.drawable.comboa, "$19.000", "Super apanado", "Realiza tu pedido");
+
+           // Toast.makeText(this, "ya lleno la tabla"+productosSQLiteHelper.buscarProducto(4).getNombre(), Toast.LENGTH_SHORT).show();
+            //favoritosSQLiteHelper.insertFav(2,3,3);
+           // favoritosSQLiteHelper.insertFav(3,3,2);
+            //favoritosSQLiteHelper.insertFav(2,6,2);
+        }
+
+        //LisVIew
+        ArrayList<Productos_combo> vamoaver = new ArrayList<Productos_combo>();
+        for(int i=1;i <=4;i++){
+            vamoaver.add(new Productos_combo(productosSQLiteHelper.buscarProducto(i).getIdprod(),productosSQLiteHelper.buscarProducto(i).getIdImagen(),productosSQLiteHelper.buscarProducto(i).getPrecio(),productosSQLiteHelper.buscarProducto(i).getNombre(),productosSQLiteHelper.buscarProducto(i).getDescripcion()));
+        }
+        //vamoaver.add(new Productos_combo(0,R.drawable.combo1, "$15.000", "Super combo 1", "Realiza tu pedido"));
+       // vamoaver.add(new Productos_combo(0,R.drawable.combo2, "$20.000", "Super combo 2", "Realiza tu pedido"));
+        //vamoaver.add(new Productos_combo(0,R.drawable.combo3, "$18.000", "Super combo 3", "Realiza tu pedido"));
+        //vamoaver.add(new Productos_combo(0,R.drawable.comboa, "$19.000", "Super apanado", "Realiza tu pedido"));
+
+        //vamoaver=Promocion.Cargar_BD();
 
         Myadapter  myadapter =new Myadapter(this,vamoaver);
         list2 =(ListView)findViewById(R.id.listview);
         list2.setAdapter(myadapter);
 
-        //sqlite
-        Promocion= new PromocionSQliteHelper(this, "PromocionDB",null,1);
-        dbPromocion= Promocion.getWritableDatabase();
+        list2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent= new Intent(getApplicationContext(),PromocionActivity.class);
+                intent.putExtra("numpromo",String.valueOf(i));
+                startActivity(intent);
+                //Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        //pref compartidas
-        prefs= getSharedPreferences("uno",MODE_PRIVATE);
-        editor=prefs.edit();
 
-        //llenar primera vez la tabla promocion de productos
-        if(prefs.getInt("v_ingreso2",-1)==-1){
-            Toast.makeText(this, "primera vez"+prefs.getInt("v_ingreso",-1), Toast.LENGTH_SHORT).show();
-            editor.putInt("v_ingreso2", 2);
-            editor.commit();
-            datapBD = new ContentValues();
-            datapBD.put("idimagen", R.drawable.combo1);
-            datapBD.put("precio", "$15.000");
-            datapBD.put("nombre", "Super combo 1");
-            datapBD.put("descripcion", "Realiza tu pedido");
-            dbPromocion.insert("Promocion", null, datapBD);
-
-            datapBD = new ContentValues();
-            datapBD.put("idimagen", R.drawable.combo2);
-            datapBD.put("precio", "$16.000");
-            datapBD.put("nombre", "Super combo 1");
-            datapBD.put("descripcion", "Realiza tu pedido");
-            dbPromocion.insert("Promocion", null, datapBD);
-
-            datapBD = new ContentValues();
-            datapBD.put("idimagen", R.drawable.combo3);
-            datapBD.put("precio", "$17.000");
-            datapBD.put("nombre", "Super combo 3");
-            datapBD.put("descripcion", "Realiza tu pedido");
-            dbPromocion.insert("Promocion", null, datapBD);
-
-            datapBD = new ContentValues();
-            datapBD.put("idimagen", R.drawable.comboa);
-            datapBD.put("precio", "$18.000");
-            datapBD.put("nombre", "Super combo 4");
-            datapBD.put("descripcion", "Realiza tu pedido");
-            dbPromocion.insert("Promocion", null, datapBD);
-           // dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo1+"', $15.000,Super combo 1,Realiza tu pedido )");
-            //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo2+"', $16.000,Super combo 2,Realiza tu pedido )");
-            //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.combo3+"', $17.000,Super combo 3,Realiza tu pedido )");
-            //dbPromocion.execSQL("INSERT INTO Promocion VALUES(null, '"+R.drawable.comboa+"', $18.000,Super combo 4,Realiza tu pedido )");
-            Toast.makeText(this, "segunda vez"+prefs.getInt("v_ingreso2",-1), Toast.LENGTH_SHORT).show();
-
-        }
         //menu completo
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -127,9 +122,11 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         drawerLayout = (DrawerLayout)findViewById(R.id.contenedor);
+
         list=(ListView)findViewById(R.id.mizq);
         list.setAdapter(new ArrayAdapter<String>(getSupportActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_1, opciones));
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -139,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     case(1):
                         Intent intent= new Intent(getApplicationContext(),CatalogoActivity.class);
                         startActivity(intent);
+                        break;
                     case(2):
                         Intent intent2= new Intent(getApplicationContext(),PerfilActivity.class);
                         startActivity(intent2);
@@ -160,22 +158,9 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.setDrawerListener(drawerToggle);
 
 
-        //list view para promocion
-        /*Adapter adaptador = new Adapter(this,datos);
-        list2 =(ListView)findViewById(R.id.listview);
-        list2.setAdapter(adaptador);*/
 
-        list2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent= new Intent(getApplicationContext(),PromocionActivity.class);
-                intent.putExtra("numpromo",String.valueOf(i));
-                startActivity(intent);
-                //Toast.makeText(getApplicationContext(),"Opcion "+String.valueOf(i), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
-
+    //Adaptador para cambiar el item de los productos del combo
     public class Myadapter extends ArrayAdapter<Productos_combo>{
         private final Context context;
         private final ArrayList<Productos_combo>  datos ;
@@ -185,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
             this.context = context;
             this.datos = datos;
         }
-
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -207,33 +191,6 @@ public class MainActivity extends AppCompatActivity {
             return (item);
         }
     }
-    //Adaptador para cambiar el item de los productos del combo
-    /*class Adapter extends ArrayAdapter<Productos_combo> {
-        public Adapter(Context context, Productos_combo[] datos) {
-            super(context, R.layout.pruducto_promo_item, datos);
-
-        }
-        //inflar la clase productos_combo
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            View item= inflater.inflate(R.layout.pruducto_promo_item, null);
-
-            TextView nombre= (TextView)item.findViewById(R.id.tnombre);
-            nombre.setText(datos[position].getNombre());
-
-            TextView precio= (TextView)item.findViewById(R.id.tprecio);
-            precio.setText(datos[position].getPrecio());
-
-            TextView descripcion= (TextView)item.findViewById(R.id.tdescripcion);
-            descripcion.setText(datos[position].getDescripcion());
-
-            ImageView imagen =(ImageView) item.findViewById(R.id.iImagen);
-            imagen.setImageResource(datos[position].getIdImagen());
-
-            return (item);
-        }
-    }*/
     //menu izq pemzar fuera del cel
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

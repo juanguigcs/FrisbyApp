@@ -23,13 +23,23 @@ public class RegistroActivity extends AppCompatActivity {
    //sqlite
     ContactosSQLiteHelper contactos;
     SQLiteDatabase dbContactos;
-    ContentValues dataBD;
+    //pref compartidas
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_registro);
+
+//pref compartidas
+        prefs= getSharedPreferences("uno",MODE_PRIVATE);
+        editor=prefs.edit();
+        if(prefs.getInt("v_idusario",-1)==-1){
+            editor.putInt("v_idusario", 0);
+            editor.commit();
+        }
 
         //sqlite
         contactos= new ContactosSQLiteHelper(this, "ContactosBD",null,1);
@@ -55,7 +65,6 @@ public class RegistroActivity extends AppCompatActivity {
                 }
             }
         });
-
         brCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,8 +73,8 @@ public class RegistroActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
 
+    }
     //función para validar campos vacíos, contraseña y existencia
    protected boolean valida () {
         String temp_usuario=erUsario.getText().toString();
@@ -76,12 +85,10 @@ public class RegistroActivity extends AppCompatActivity {
        if(TextUtils.isEmpty(temp_usuario)||TextUtils.isEmpty(temp_contrasena)||TextUtils.isEmpty(temp_rcontrasena)||TextUtils.isEmpty(temp_correo)){
                Toast.makeText(this, "Campos vacíos .-. ",Toast.LENGTH_SHORT).show();
                return false;
-
        }
        else{
            if(temp_contrasena.equals(temp_rcontrasena)) {
-                Cursor c = dbContactos.rawQuery("select * from Contactos where usuario='" + temp_usuario + "'", null);
-                if (c.moveToFirst()) {
+               if(contactos.buscarContactos(temp_usuario).getIdusuario()>=1){
                     Toast.makeText(this, "El usario ya existe.-. ", Toast.LENGTH_SHORT).show();
                     erUsario.setText("");
                     erCorreo.setText("");
@@ -90,14 +97,12 @@ public class RegistroActivity extends AppCompatActivity {
                     return false;
                 }
                 else {
-                    dataBD = new ContentValues();
-                    dataBD.put("usuario", temp_usuario);
-                    dataBD.put("contrasena", temp_contrasena);
-                    dataBD.put("rcontrasena", temp_rcontrasena);
-                    dataBD.put("correo", temp_correo);
-
-                    dbContactos.insert("Contactos", null, dataBD);
-                    return true;
+                   int contid=prefs.getInt("v_idusario",-1);
+                   contid ++;
+                   editor.putInt("v_idusario", contid);
+                   editor.commit();
+                   Toast.makeText(this, "numero de usuario "+Integer.toString(prefs.getInt("v_idusario",-1)), Toast.LENGTH_SHORT).show();
+                   return contactos.insertContactos(prefs.getInt("v_idusario",-1),temp_usuario,temp_contrasena,temp_correo);
                 }
            }
            else{

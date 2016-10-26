@@ -16,12 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    //base de datos en variables
-    String Array_usuario[] = new String[100];
-    String Array_contrasena[] = new String[100];
-    String Array_correo[] = new String[100];
-    int cont_usuario=0;
-    String usuario_in;
+
     Button bResgistro, bEntrar;
     EditText eUsario, eContrasena;
 
@@ -34,7 +29,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     //pref compartidas
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
-    int value=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +63,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 finish();
         }
     }
-
     //listener para dos varios botones
     @Override
     public void onClick(View view) {
@@ -82,10 +76,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.bEntrar:
                 c = dbContactos.rawQuery("select * from Contactos where usuario='" + eUsario.getText().toString() + "'", null);
                 if (c.moveToFirst()) {
-                    if(c.getString(2).equals(eContrasena.getText().toString())){
+                    if(c.getString(3).equals(eContrasena.getText().toString())){
                         editor.putInt("v_ingreso", 1);
-                        editor.putString("v_usuario",c.getString(1) );
-                        //Toast.makeText(this, "c(2)"+c.getString(2), Toast.LENGTH_SHORT).show();
+                        editor.putString("v_usuario",c.getString(2) );
                         editor.commit();
                         Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent2);

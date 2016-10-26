@@ -19,6 +19,8 @@
     <string name="precio">Precio: </string>
     <string name="abierto">Open navigation drawer</string>
     <string name="cerrado">Close navigation drawer</string>
+    <string name="guardar">Guardar</string>
+    <string name="favoritos">Añadir a favoritos</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

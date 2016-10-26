@@ -61,12 +61,12 @@ public class PerfilActivity extends AppCompatActivity {
 
         c = dbContactos.rawQuery("select * from Contactos where usuario='" + prefs.getString("v_usuario", "u") + "'", null);
         if (c.moveToFirst()) {
-            tVusuario.setText(c.getString(1));
+            tVusuario.setText(c.getString(2));
             tVcorreo.setText(c.getString(4));
-            tVcontrasena.setText(c.getString(2));
-            Toast.makeText(this, "vamos con c(1)"+c.getString(1), Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, "c(2)"+c.getString(2), Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, "c(3)"+c.getString(3), Toast.LENGTH_SHORT).show();
+            tVcontrasena.setText(c.getString(3));
+            //Toast.makeText(this, "vamos "+prefs.getString("v_usuario", "u"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "c(2)"+c.getString(1), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "c(3)"+c.getString(3), Toast.LENGTH_SHORT).show();
         }
 
         ActionBar actionBar = getSupportActionBar();
@@ -99,7 +99,7 @@ public class PerfilActivity extends AppCompatActivity {
                     case(3):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
                         startActivity(intent3);
-                        editor.clear();
+                        editor.remove("v_ingreso");
                         editor.commit();
                         finish();
                         break;

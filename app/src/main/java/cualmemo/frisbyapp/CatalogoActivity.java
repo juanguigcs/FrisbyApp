@@ -76,7 +76,7 @@ public class CatalogoActivity extends AppCompatActivity {
                     case(3):
                         Intent intent3= new Intent(getApplicationContext(),LoginActivity.class);
                         startActivity(intent3);
-                        editor.clear();
+                        editor.remove("v_ingreso");
                         editor.commit();
                         finish();
                         break;

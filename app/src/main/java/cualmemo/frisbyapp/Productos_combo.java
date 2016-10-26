@@ -4,14 +4,26 @@ package cualmemo.frisbyapp;
  * Created by El Memo on 02/10/2016.
  */
 public class Productos_combo {
-    int idImagen ;
+    int idprod,idImagen ;
     String nombre, descripcion,precio;
 
-    public Productos_combo(int idImagen, String nombre, String descripcion, String precio) {
+    public Productos_combo() {
+    }
+
+    public Productos_combo(int idprod, int idImagen, String nombre, String descripcion, String precio) {
+        this.idprod = idprod;
         this.idImagen = idImagen;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
+    }
+
+    public int getIdprod() {
+        return idprod;
+    }
+
+    public void setIdprod(int idprod) {
+        this.idprod = idprod;
     }
 
     public int getIdImagen() {
